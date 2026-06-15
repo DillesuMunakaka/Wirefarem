@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Onefinity Projects — Onefinity CNC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind.config.js"></script>
+  <link rel="stylesheet" href="assets/theme.css">
+</head>
+<body class="font-body text-ink bg-white antialiased min-h-screen flex flex-col">
+
+  <div id="site-header"></div>
+
+  <main class="flex-1">
+    <div id="page-hero"
+         data-eyebrow="Made on a Onefinity"
+         data-title="Onefinity Projects"
+         data-sub="Real builds from the community. Get inspired, then make your own."></div>
+
+    <section class="shell py-16 lg:py-20"
+         x-data="{ projects: [
+           {title:'Live-edge walnut sign',maker:'Marcus T.',cat:'Signage',accent:'linear-gradient(135deg,#479D6E,#2F6949)'},
+           {title:'Aluminum motor mount',maker:'Dana R.',cat:'Metal',accent:'linear-gradient(135deg,#31363A,#23272A)'},
+           {title:'Inlaid serving board',maker:'Sofia L.',cat:'Woodworking',accent:'linear-gradient(135deg,#C8E2D4,#479D6E)'},
+           {title:'Guitar body blank',maker:'Owen P.',cat:'Instruments',accent:'linear-gradient(135deg,#2F6949,#1f4a32)'},
+           {title:'Topographic wall map',maker:'Priya S.',cat:'Art',accent:'linear-gradient(135deg,#479D6E,#A6B0B6)'},
+           {title:'Rotary-carved bat',maker:'Jamal K.',cat:'4th Axis',accent:'linear-gradient(135deg,#31363A,#479D6E)'}
+         ] }">
+      <div class="grid gap-5" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))">
+        <template x-for="(p,i) in projects" :key="i">
+          <div class="card card-hover reveal overflow-hidden flex flex-col">
+            <div class="h-[190px] flex items-end p-4 relative overflow-hidden" :style="'background:'+p.accent"><span class="absolute inset-0 grain opacity-60"></span><span class="relative bg-white/90 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-full" x-text="p.cat"></span></div>
+            <div class="p-5"><h3 class="font-head text-[20px] font-extrabold leading-snug" x-text="p.title"></h3><div class="text-sm text-faint mt-1.5">by <span x-text="p.maker"></span></div></div>
+          </div>
+        </template>
+      </div>
+      <div class="mt-10 text-center">
+        <a href="contact.html" class="btn btn-ghost px-6 py-3.5">Submit your project</a>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/theme.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Log in — Onefinity CNC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind.config.js"></script>
+  <link rel="stylesheet" href="assets/theme.css">
+</head>
+<body class="font-body text-ink bg-white antialiased min-h-screen flex flex-col">
+
+  <div id="site-header"></div>
+
+  <main class="flex-1">
+    <div class="max-w-[430px] mx-auto px-[22px] pt-[60px] pb-[90px]">
+      <div class="text-center mb-7">
+        <h1 class="font-head text-[38px] font-extrabold mb-2">Welcome back</h1>
+        <p class="text-base text-muted">Log in to your Onefinity account.</p>
+      </div>
+      <form @submit.prevent="window.location.href='account.html'" class="bg-white border border-line rounded-[20px] p-7 flex flex-col gap-3.5">
+        <input type="email" required placeholder="Email address" class="border-[1.5px] border-line2 rounded-[11px] px-3.5 py-3 text-[15px] outline-none w-full">
+        <input type="password" required placeholder="Password" class="border-[1.5px] border-line2 rounded-[11px] px-3.5 py-3 text-[15px] outline-none w-full">
+        <button type="submit" class="bg-brand-green text-white text-base font-bold py-3.5 rounded-xl mt-1 hover:bg-brand-dark transition-colors">Log in</button>
+        <div class="text-center text-[13px] text-faint">Forgot password?</div>
+        <div class="flex items-center gap-3 my-1.5"><div class="flex-1 h-px bg-line"></div><span class="text-xs text-hush">OR</span><div class="flex-1 h-px bg-line"></div></div>
+        <a href="account.html" class="text-center border-[1.5px] border-line2 text-[15px] font-bold py-3.5 rounded-xl">Continue as guest</a>
+      </form>
+      <p class="text-center text-sm text-muted mt-5">New here? <span class="text-brand-dark font-bold">Create an account</span></p>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/theme.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>

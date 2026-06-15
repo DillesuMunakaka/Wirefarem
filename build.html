@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Build Your CNC — Onefinity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind.config.js"></script>
+  <link rel="stylesheet" href="assets/theme.css">
+  <!-- On the configurator the step rail is the sticky element, so the
+       global header scrolls away instead of overlapping it. -->
+  <style>[data-header]{position:relative !important;}</style>
+</head>
+<body class="font-body text-ink bg-brand-wash2 antialiased min-h-screen flex flex-col">
+
+  <div id="site-header"></div>
+
+  <main class="flex-1 pb-28 lg:pb-10" x-data="buildWizard()" x-init="init()">
+
+    <!-- HERO BAND -->
+    <div class="px-5 pt-4">
+      <div class="relative overflow-hidden grain rounded-[24px] max-w-[1240px] mx-auto mt-1.5 mb-6 flex flex-col-reverse lg:flex-row items-stretch lg:h-[230px] shadow-[0_20px_50px_rgba(47,105,73,.28)] animate-slidedown"
+           style="background-color:#2F6949;background-image:linear-gradient(118deg,#234A36 0%,#2F6949 46%,#479D6E 100%)">
+        <a href="index.html" class="absolute top-4 left-4 z-[6] flex items-center gap-1.5 text-white text-[12.5px] font-bold px-3.5 py-2 rounded-[10px] border border-white/25 transition-colors" style="background:rgba(15,22,18,.34)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Exit
+        </a>
+        <button @click="reset()" class="absolute top-4 right-4 z-[6] flex items-center gap-1.5 text-white text-[12.5px] font-bold px-3.5 py-2 rounded-[10px] border border-white/25 transition-colors" style="background:rgba(15,22,18,.34)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.5 15a9 9 0 1 0 2.1-9.4L1 10"/></svg> Start over
+        </button>
+        <div class="relative z-[2] px-6 lg:px-10 pt-[52px] pb-7 lg:py-7 flex-1 lg:max-w-[60%] flex flex-col justify-center">
+          <div class="inline-flex items-center gap-2 self-start bg-white/20 text-white text-[11.5px] font-extrabold tracking-[.07em] px-3 py-1.5 rounded-full mb-3.5 uppercase" x-text="stepEyebrow"></div>
+          <h1 class="font-head text-[clamp(26px,3.6vw,40px)] font-extrabold leading-[1.04] tracking-[-.015em] text-white" x-text="step.title"></h1>
+          <p class="text-[15.5px] leading-relaxed text-white/85 mt-3 max-w-[460px]" x-text="step.sub"></p>
+        </div>
+        <div class="relative z-[2] shrink-0 w-full h-[150px] lg:w-2/5 lg:h-auto flex items-center justify-center p-4">
+          <div class="absolute w-[78%] aspect-square rounded-full" style="background:radial-gradient(circle,rgba(255,255,255,.16),transparent 68%)"></div>
+          <img :src="step.heroImg" alt="" class="relative w-full max-w-[280px] max-h-[180px] object-contain animate-floaty" style="filter:drop-shadow(0 18px 30px rgba(0,0,0,.35))" loading="lazy">
+        </div>
+      </div>
+    </div>
+
+    <!-- STICKY STEP RAIL -->
+    <div data-build-anchor class="sticky top-0 z-[80] border-b border-[#E7ECE9] shadow-[0_4px_18px_rgba(0,0,0,.05)] mt-4" style="background:rgba(247,250,248,.96);backdrop-filter:blur(8px)">
+      <div class="max-w-[1240px] mx-auto px-5 lg:px-6 py-3 flex items-center gap-3 lg:gap-4">
+        <button @click="back()" :disabled="!canBack" class="flex items-center gap-1.5 bg-white text-ink font-bold text-[14.5px] px-3.5 lg:px-5 py-3 rounded-xl border-[1.5px] border-[#E7ECE9] shrink-0 transition-colors" :class="!canBack && 'opacity-40 pointer-events-none'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <span class="hidden sm:inline">Back</span>
+        </button>
+        <div class="flex-1 min-w-0">
+          <!-- mobile: compact progress (10 dots don't fit narrow screens) -->
+          <div class="sm:hidden">
+            <div class="flex justify-between items-center text-[11px] font-extrabold uppercase tracking-[.08em] text-brand-green mb-1.5">
+              <span x-text="'Step '+(wStep+1)+' of '+totalSteps"></span>
+              <span class="truncate ml-3 text-faint normal-case tracking-normal font-bold" x-text="step.title"></span>
+            </div>
+            <div class="h-1.5 rounded-full bg-[#E4E9E6] overflow-hidden"><div class="h-full bg-gradient-to-r from-brand-green to-brand-dark rounded-full transition-[width] duration-500" :style="'width:'+railFillPct+'%'"></div></div>
+          </div>
+          <!-- desktop: clickable dot timeline -->
+          <div class="hidden sm:block max-w-[640px] mx-auto relative">
+            <div class="absolute left-[15px] right-[15px] top-[15px] h-[3px] bg-[#E4E9E6] rounded overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-brand-green to-brand-dark rounded transition-[width] duration-500" :style="'width:'+railFillPct+'%'"></div>
+            </div>
+            <div class="relative flex justify-between items-start">
+              <template x-for="(w,i) in wizard" :key="w.key">
+                <button @click="goto(i)" :title="w.title" class="flex items-center justify-center rounded-full font-extrabold shrink-0 transition-all"
+                  :class="i===wStep ? 'w-10 h-10 bg-brand-dark text-white border-[3px] border-brand-mint shadow-[0_6px_16px_rgba(47,105,73,.35)] text-sm' : (i<wStep ? 'w-[30px] h-[30px] bg-brand-green text-white border-2 border-brand-green text-xs' : 'w-[30px] h-[30px] bg-white text-hush border-2 border-line2 text-xs')">
+                  <svg x-show="i<wStep" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span x-show="i>=wStep" x-text="i+1"></span>
+                </button>
+              </template>
+            </div>
+            <div class="text-center text-[10.5px] font-extrabold tracking-[.16em] text-brand-green mt-2.5 uppercase" x-text="stepEyebrow"></div>
+          </div>
+        </div>
+        <!-- Next always visible in the sticky rail (incl. mobile) -->
+        <button @click="next()" class="flex items-center gap-1.5 bg-brand-green text-white font-extrabold text-[13.5px] lg:text-[14.5px] px-3.5 lg:px-5 py-3 rounded-xl whitespace-nowrap shrink-0 hover:bg-brand-dark transition-colors" x-text="nextLabel"></button>
+      </div>
+    </div>
+
+    <!-- BODY -->
+    <div class="max-w-[1280px] mx-auto px-[18px] lg:px-7 pt-8 pb-10">
+
+      <!-- OPTIONS -->
+      <div x-show="!isReview" class="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-5">
+        <template x-for="o in step.options" :key="o.id">
+          <div @click="chooseOpt(step,o)" class="relative cursor-pointer flex flex-col rounded-[18px] overflow-hidden transition-all hover:-translate-y-1"
+               :class="isSelected(step,o) ? 'bg-[#F4FAF6] border-2 border-brand-green shadow-[0_14px_32px_rgba(71,157,110,.18)]' : 'bg-white border-2 border-[#E7ECE9] shadow-[0_4px_16px_rgba(0,0,0,.05)] hover:border-brand-green'">
+            <div x-show="isSelected(step,o)" class="absolute top-3 right-3 w-[26px] h-[26px] rounded-full bg-brand-green flex items-center justify-center z-[3] shadow-[0_0_0_4px_rgba(71,157,110,.18)]"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="relative h-[160px] lg:h-[180px] bg-[#F1F4F2] flex items-center justify-center overflow-hidden">
+              <span class="absolute top-3 left-3 text-white text-[10.5px] font-bold px-2.5 py-1 rounded-[7px] z-[2]" :style="'background:'+badgeColor(o)" x-text="o.badge"></span>
+              <div x-show="o.logoCard" class="flex items-center gap-2">
+                <div class="w-5 h-[31px] rounded-sm" style="background:repeating-linear-gradient(-33deg,#C8E2D4 0 5px,#fff 5px 10px)"></div>
+                <div><div class="font-head text-[17px] font-extrabold text-slate2 leading-none">ONEFINITY</div><div class="text-[7.5px] text-faint mt-1">One Machine Infinite Possibilities</div></div>
+              </div>
+              <img x-show="!o.logoCard" :src="o.img" :alt="o.name" class="w-full h-full object-contain p-3.5" loading="lazy">
+            </div>
+            <div class="p-3.5 pb-[58px] flex flex-col flex-1 relative">
+              <h3 class="text-[15px] font-bold leading-snug mb-1 min-h-[36px] text-[#2A2E31]" x-text="o.name"></h3>
+              <div class="text-[12.5px] text-faint mb-2.5 leading-snug" x-text="o.sub"></div>
+              <div class="mt-auto flex items-baseline gap-1.5 flex-wrap">
+                <span x-show="o.was" class="text-[13px] text-hush line-through" x-text="money(o.was)"></span>
+                <span class="text-[19px] font-extrabold text-brand-dark" x-text="optPriceFmt(o)"></span>
+              </div>
+              <div class="flex items-center gap-2.5 mt-1.5">
+                <span class="text-[11.5px] font-bold" :class="isSelected(step,o) ? 'text-brand-dark' : 'text-faint'" x-text="statusLabel(step,o)"></span>
+                <button @click.stop="openDetail(step,o)" class="text-[11.5px] font-bold text-brand-dark underline underline-offset-2">Details</button>
+              </div>
+              <button @click.stop="chooseOpt(step,o)" class="absolute bottom-3.5 right-3.5 w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-[0_4px_12px_rgba(0,0,0,.12)] border-2"
+                :class="isSelected(step,o) ? 'bg-brand-green border-brand-green text-white' : 'bg-white border-line2 text-brand-dark'">
+                <svg x-show="isSelected(step,o)" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <svg x-show="!isSelected(step,o)" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- REVIEW -->
+      <div x-show="isReview" class="max-w-[620px] mx-auto bg-white border border-line rounded-[22px] overflow-hidden shadow-card">
+        <div class="px-6 py-6 text-white flex items-center gap-4" style="background:linear-gradient(135deg,#2F6949,#479D6E)">
+          <img :src="(selOpt('size')||{}).img" alt="" class="w-[70px] h-[70px] object-contain" style="filter:drop-shadow(0 6px 12px rgba(0,0,0,.3))" loading="lazy">
+          <div><div class="text-xs font-bold tracking-[.1em] uppercase opacity-85">Your custom build</div><div class="font-head text-[22px] font-extrabold" x-text="sizeLabel()"></div></div>
+        </div>
+        <div class="px-6 py-1.5">
+          <template x-for="l in summaryLines()" :key="l.key">
+            <div class="flex items-center justify-between gap-3.5 py-3 border-b border-line">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-[10px] bg-brand-wash border border-line shrink-0 overflow-hidden flex items-center justify-center"><img :src="l.img" alt="" class="w-full h-full object-contain p-1" loading="lazy"></div>
+                <div class="flex flex-col"><span class="text-[14.5px] font-semibold text-ink leading-tight" x-text="l.label"></span><button @click="goto(wizard.findIndex(w=> w.key===l.key || (l.key.indexOf('a-')===0 && w.key==='addons') || (l.key==='ctrl' && w.key==='size')))" class="text-left text-xs font-bold text-brand-green mt-0.5">Edit</button></div>
+              </div>
+              <div class="flex items-center gap-2 whitespace-nowrap">
+                <span x-show="l.was" class="text-[12.5px] text-hush line-through" x-text="money(l.was)"></span>
+                <span class="text-[14.5px] font-extrabold" :class="l.free ? 'text-brand-green' : 'text-ink'" x-text="l.free ? 'FREE' : (l.price>0 ? money(l.price) : 'Included')"></span>
+              </div>
+            </div>
+          </template>
+        </div>
+        <div class="mx-6 mt-3.5 bg-brand-mint2 border border-dashed border-brand-green rounded-xl px-3.5 py-3 flex items-center gap-2.5">
+          <span class="w-7 h-7 rounded-full bg-brand-green flex items-center justify-center shrink-0"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/></svg></span>
+          <span class="text-[13px] font-bold text-brand-dark">You're getting <span x-text="freeGiftCount"></span> free gifts with this machine 🎁</span>
+        </div>
+        <div class="px-6 py-5">
+          <button @click="addToCart()" class="w-full bg-brand-green text-white text-[17px] font-extrabold py-4 rounded-[14px] hover:bg-brand-dark transition-colors">Add Build to Cart · <span x-text="buildTotalFmt"></span></button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- DESKTOP: floating Live Build launcher -->
+    <button @click="previewOpen=true" x-show="!previewOpen" class="hidden lg:flex fixed right-5 bottom-5 z-[90] items-center gap-2.5 bg-night text-white font-bold text-[14px] px-5 py-3.5 rounded-[14px] shadow-pop hover:-translate-y-0.5 transition-transform">
+      <span class="w-2 h-2 rounded-full bg-[#7FCBA1]" style="box-shadow:0 0 0 4px rgba(71,157,110,.25)"></span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7FCBA1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+      Live Build · <span x-text="buildTotalFmt"></span>
+    </button>
+
+    <!-- MOBILE: sticky bottom bar -->
+    <div class="lg:hidden fixed left-0 right-0 bottom-0 z-[88] bg-white border-t border-line shadow-[0_-8px_26px_rgba(0,0,0,.08)]">
+      <div class="px-4 py-3 flex items-center gap-3">
+        <button @click="previewOpen=true" class="flex items-center gap-2 bg-night text-white font-bold text-sm px-3.5 py-3 rounded-xl shrink-0">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#7FCBA1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+        <div class="flex flex-col leading-none"><span class="text-[11px] text-faint font-semibold">Build total</span><span class="text-[22px] font-extrabold text-brand-dark" x-text="buildTotalFmt"></span></div>
+        <button @click="next()" class="ml-auto bg-brand-green text-white font-extrabold text-[15px] px-5 py-3 rounded-xl whitespace-nowrap" x-text="nextLabel"></button>
+      </div>
+    </div>
+
+    <!-- LIVE PREVIEW PANEL (shared: bottom-sheet on mobile, card bottom-right on desktop) -->
+    <div x-show="previewOpen" x-cloak x-transition.opacity @click="previewOpen=false" class="fixed inset-0 z-[132]" style="background:rgba(10,15,12,.5)"></div>
+    <div x-show="previewOpen" x-cloak
+         class="fixed z-[135] text-white bg-night overflow-y-auto left-0 right-0 bottom-0 rounded-t-[22px] max-h-[84vh] lg:left-auto lg:right-5 lg:bottom-[88px] lg:top-auto lg:w-[380px] lg:max-h-[calc(100vh-120px)] lg:rounded-[20px] shadow-[0_-14px_40px_rgba(0,0,0,.4)]"
+         x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full lg:opacity-0" x-transition:enter-end="translate-y-0 lg:opacity-100"
+         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0 lg:opacity-100" x-transition:leave-end="translate-y-full lg:opacity-0">
+      <div class="px-5 py-4 flex items-center justify-between border-b border-[#2F3439]">
+        <span class="text-[13px] font-bold tracking-[.12em] text-[#7FCBA1] flex items-center gap-2"><span class="w-[7px] h-[7px] rounded-full bg-brand-green" style="box-shadow:0 0 0 4px rgba(71,157,110,.25)"></span>LIVE PREVIEW</span>
+        <button @click="previewOpen=false" class="w-[34px] h-[34px] rounded-[9px] bg-[#2A2F33] flex items-center justify-center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div class="px-5 pt-3.5 pb-1"><div class="text-sm text-[#9AA7AE] font-semibold mb-1" x-text="stage.baseLabel"></div><div class="text-[11px] text-[#6B7378]">Tap a dot to see the part &amp; price</div></div>
+
+      <!-- schematic -->
+      <div class="relative h-[250px] mx-3.5">
+        <div class="absolute inset-0 rounded-[14px]" style="background:radial-gradient(120% 100% at 50% 0%,#2C3236,#1A1D20)"></div>
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[210px]">
+          <template x-if="stage.tableOn">
+            <div>
+              <div class="absolute w-[10px] h-[34px] bg-[#3A4045] rounded-sm" style="left:42px;top:178px;transform:skewX(10deg)"></div>
+              <div class="absolute w-[10px] h-[34px] bg-[#3A4045] rounded-sm" style="right:42px;top:178px;transform:skewX(-10deg)"></div>
+              <div class="absolute border-[2.5px] border-[#4A5055] rounded-[5px]" style="left:12px;right:12px;top:148px;height:44px"></div>
+            </div>
+          </template>
+          <div class="absolute rounded-[3px]" style="left:20px;right:20px;top:162px;height:16px;background:linear-gradient(180deg,#D8B57D,#BE9A5E);box-shadow:inset 0 2px 0 rgba(255,255,255,.25)"></div>
+          <div class="absolute w-3 h-[108px] rounded-[3px]" style="left:38px;top:58px;background:linear-gradient(90deg,#9AA0A4,#6C7378)"></div>
+          <div class="absolute w-3 h-[108px] rounded-[3px]" style="right:38px;top:58px;background:linear-gradient(90deg,#6C7378,#9AA0A4)"></div>
+          <div class="absolute rounded-[4px]" style="left:32px;right:32px;top:56px;height:16px;background:linear-gradient(180deg,#AEB4B8,#7B8287);box-shadow:0 3px 8px rgba(0,0,0,.35)"></div>
+          <div class="absolute w-[44px] h-[64px] rounded-[7px] transition-colors duration-500" style="left:116px;top:54px;box-shadow:0 6px 16px rgba(0,0,0,.4)" :style="'background:'+stage.spColor"></div>
+          <div class="absolute w-[10px] h-5 bg-[#2A2E31] rounded-b-[3px]" style="left:133px;top:116px"></div>
+          <template x-if="stage.dustOn"><div class="absolute w-[60px] h-[26px] border-2 border-[#5A6066] opacity-70" style="left:108px;top:108px;border-radius:0 0 30px 30px"></div></template>
+          <template x-if="stage.rotaryOn"><div class="absolute w-[46px] h-[14px] rounded-[7px]" style="left:30px;top:150px;background:linear-gradient(90deg,#479D6E,#2F6949);box-shadow:0 0 12px rgba(71,157,110,.6)"></div></template>
+          <template x-if="stage.atcOn"><div class="absolute w-[30px] h-10 bg-[#15181A] border-2 border-brand-green rounded-[5px]" style="right:24px;top:120px;box-shadow:0 0 14px rgba(71,157,110,.4)"></div></template>
+        </div>
+        <template x-for="d in previewDots" :key="d.id">
+          <div class="absolute -translate-x-1/2 -translate-y-1/2" :style="'left:'+d.left+';top:'+d.top+';z-index:'+(activeDot===d.id?9:4)">
+            <button @click="toggleDot(d.id)" class="w-7 h-7 rounded-full border-2 flex items-center justify-center relative shadow-[0_3px_10px_rgba(0,0,0,.35)]"
+              :class="activeDot===d.id ? 'bg-brand-dark border-white text-white' : (d.added ? 'bg-brand-green border-brand-green text-white' : 'bg-white border-white text-brand-dark')">
+              <span x-show="!d.added && activeDot!==d.id" class="absolute -inset-1.5 rounded-full border-2 animate-pingo pointer-events-none" style="border-color:rgba(71,157,110,.55)"></span>
+              <svg x-show="d.added" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg x-show="!d.added" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <div x-show="activeDot===d.id" x-transition class="absolute bottom-9 left-1/2 -translate-x-1/2 w-[190px] bg-white text-ink rounded-[14px] shadow-pop px-3.5 py-3">
+              <span class="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mb-1.5" :class="d.added ? 'bg-brand-mint2 text-brand-dark' : 'bg-[#FBE9D0] text-[#A86A1B]'" x-text="d.added ? 'Added' : 'Not added'"></span>
+              <div class="text-[13.5px] font-bold leading-tight" x-text="d.label"></div>
+              <div class="text-sm font-extrabold text-brand-dark my-0.5 mb-2" x-text="d.priceFmt"></div>
+              <button @click="editDot(d.stepIdx)" class="w-full bg-brand-mint2 text-brand-dark font-bold text-[12.5px] py-2 rounded-[9px]" x-text="d.added ? 'Change' : 'Add this'"></button>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- legend -->
+      <div class="px-5 pt-3 flex items-center gap-4">
+        <span class="flex items-center gap-1.5 text-[11px] text-[#9AA7AE] font-semibold"><span class="w-3.5 h-3.5 rounded-full bg-brand-green flex items-center justify-center"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>Added</span>
+        <span class="flex items-center gap-1.5 text-[11px] text-[#9AA7AE] font-semibold"><span class="w-3.5 h-3.5 rounded-full bg-white border-2 border-brand-green"></span>Tap to add</span>
+      </div>
+      <!-- chips -->
+      <div class="px-5 py-2 flex flex-wrap gap-1.5 min-h-[14px]">
+        <template x-for="(c,i) in stage.chips" :key="i"><span class="text-[11px] font-bold px-2.5 py-1 rounded-full animate-pop" style="background:rgba(71,157,110,.18);color:#9FE0BC;border:1px solid rgba(71,157,110,.35)" x-text="c"></span></template>
+      </div>
+      <div class="px-5 pt-1.5 pb-4 border-t border-[#2F3439] mt-1.5">
+        <div class="flex items-baseline justify-between my-2.5 mb-3"><span class="text-sm text-[#9AA7AE] font-semibold">Build total</span><span class="text-[22px] font-extrabold text-white" x-text="buildTotalFmt"></span></div>
+        <button @click="addToCart()" class="w-full bg-brand-green text-white text-[15px] font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-brand-dark transition-colors">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1.6"/><circle cx="19" cy="21" r="1.6"/><path d="M2.5 3h2l2.2 12.4a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L22 7H6"/></svg>
+          Add to Cart
+        </button>
+      </div>
+    </div>
+
+    <!-- OPTION DETAIL MODAL -->
+    <div x-show="cfgDetail" x-cloak x-transition.opacity @click="closeDetail()" class="fixed inset-0 z-[175] flex items-center justify-center p-5" style="background:rgba(8,12,10,.6)">
+      <template x-if="detail">
+        <div @click.stop x-transition class="bg-white rounded-[22px] w-full max-w-[460px] overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,.4)]">
+          <div class="relative aspect-video bg-[#F1F4F2] flex items-center justify-center">
+            <span class="absolute top-3.5 left-3.5 text-white text-[11px] font-bold px-2.5 py-1 rounded-[7px]" :style="'background:'+badgeColor(detail.opt)" x-text="detail.opt.badge"></span>
+            <button @click="closeDetail()" class="absolute top-3 right-3 w-[34px] h-[34px] rounded-[9px] bg-white shadow-pop flex items-center justify-center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#656565" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            <img :src="detail.opt.img || OF_DATA.IMG.exploded" :alt="detail.opt.name" class="w-full h-full object-contain p-6" loading="lazy">
+          </div>
+          <div class="p-6">
+            <h3 class="font-head text-[22px] font-extrabold mb-1.5 text-[#2A2E31]" x-text="detail.opt.name"></h3>
+            <div class="text-[13.5px] text-faint mb-3" x-text="detail.opt.sub"></div>
+            <p class="text-[15px] leading-relaxed text-[#54585B] mb-4" x-text="detail.opt.detail || detail.opt.sub"></p>
+            <div class="flex items-center justify-between gap-3">
+              <span class="text-[23px] font-extrabold text-brand-dark" x-text="optPriceFmt(detail.opt)"></span>
+              <button @click="selectDetail()" class="bg-brand-green text-white font-bold text-[15px] px-6 py-3 rounded-xl hover:bg-brand-dark transition-colors">Select this</button>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- IN-BUILD VARIANT MODAL -->
+    <div x-show="cfgVariant" x-cloak x-transition.opacity @click="closeCfgVariant()" class="fixed inset-0 z-[178] flex items-center justify-center p-5" style="background:rgba(8,12,10,.6)">
+      <template x-if="cfgVar">
+        <div @click.stop x-transition class="bg-white rounded-[22px] w-full max-w-[420px] overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,.4)]">
+          <div class="flex gap-3.5 items-center px-5 py-5 border-b border-line">
+            <div class="w-[60px] h-[60px] rounded-[13px] bg-brand-wash border border-line shrink-0 overflow-hidden flex items-center justify-center"><img :src="cfgVar.opt.img" alt="" class="w-full h-full object-contain p-1.5"></div>
+            <div class="flex-1 min-w-0">
+              <div class="text-xs font-bold tracking-[.06em] uppercase text-brand-green mb-0.5">Choose <span x-text="cfgVar.opt.variantLabel || 'Option'"></span></div>
+              <h3 class="font-head text-[19px] font-extrabold leading-tight text-[#2A2E31]" x-text="cfgVar.opt.name"></h3>
+            </div>
+            <button @click="closeCfgVariant()" class="w-8 h-8 rounded-[9px] bg-brand-wash flex items-center justify-center shrink-0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#656565" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          </div>
+          <div class="px-5 py-4 flex flex-col gap-2.5">
+            <template x-for="(v,i) in cfgVar.opt.variants" :key="i">
+              <div @click="pickCfgVariant(i)" class="cursor-pointer flex items-center justify-between gap-3 px-4 py-3.5 rounded-[13px] border-2 transition-all"
+                   :class="(build.variants[cfgVariant.stepKey]||0)===i ? 'border-brand-green bg-[#F4FAF6]' : 'border-[#E4E9E6] bg-white'">
+                <div class="flex items-center gap-3">
+                  <span class="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0" :class="(build.variants[cfgVariant.stepKey]||0)===i ? 'border-brand-green bg-brand-green' : 'border-[#C4CBC7] bg-white'"><svg x-show="(build.variants[cfgVariant.stepKey]||0)===i" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                  <div><div class="text-[15px] font-bold text-[#2A2E31]" x-text="v.label"></div><div class="text-[12.5px] text-faint" x-text="v.note||''"></div></div>
+                </div>
+                <span class="text-[14.5px] font-extrabold text-brand-dark whitespace-nowrap" x-text="v.delta>0 ? '+'+money(v.delta) : 'Included'"></span>
+              </div>
+            </template>
+          </div>
+          <div class="px-5 pb-5"><button @click="closeCfgVariant()" class="w-full bg-brand-green text-white font-extrabold text-base py-3.5 rounded-[13px] hover:bg-brand-dark transition-colors">Confirm &amp; keep building</button></div>
+        </div>
+      </template>
+    </div>
+
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/theme.js"></script>
+  <script src="assets/build.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>

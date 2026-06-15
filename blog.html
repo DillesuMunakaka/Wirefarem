@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blog — Onefinity CNC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind.config.js"></script>
+  <link rel="stylesheet" href="assets/theme.css">
+</head>
+<body class="font-body text-ink bg-white antialiased min-h-screen flex flex-col">
+
+  <div id="site-header"></div>
+
+  <main class="flex-1">
+    <div id="page-hero"
+         data-eyebrow="Learn &amp; Make"
+         data-title="The Onefinity Blog"
+         data-sub="Projects, guides and tips to get more from your machine."></div>
+
+    <section class="shell py-16 lg:py-20" x-data="{ posts: OF_DATA.posts }">
+      <div class="grid gap-5" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr))">
+        <template x-for="(p,i) in posts" :key="i">
+          <div @click="$store.shop.pushToast('Coming soon','Article preview not wired up')" class="card card-hover reveal overflow-hidden cursor-pointer flex flex-col">
+            <div class="h-[180px] flex items-end p-4 relative overflow-hidden" :style="'background:'+p.accent"><span class="absolute inset-0 grain opacity-60"></span><span class="relative bg-white/90 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-full" x-text="p.cat"></span></div>
+            <div class="p-5 flex flex-col flex-1">
+              <h3 class="font-head text-[21px] font-extrabold leading-snug mb-3 flex-1" x-text="p.title"></h3>
+              <div class="flex items-center justify-between"><span class="text-[13px] text-faint" x-text="p.read"></span><span class="text-brand-dark font-bold text-sm">Read →</span></div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/theme.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Support &amp; FAQ — Onefinity CNC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind.config.js"></script>
+  <link rel="stylesheet" href="assets/theme.css">
+</head>
+<body class="font-body text-ink bg-white antialiased min-h-screen flex flex-col">
+
+  <div id="site-header"></div>
+
+  <main class="flex-1">
+    <div id="page-hero"
+         data-eyebrow="Support"
+         data-title="Questions, answered"
+         data-sub="Everything you need to know about setup, capabilities, shipping and support."></div>
+
+    <div class="shell-narrow py-16 lg:py-20" x-data="{ faqs: OF_DATA.faqs, open: 0 }">
+      <div class="flex flex-col gap-3">
+        <template x-for="(f,i) in faqs" :key="i">
+          <div class="card reveal overflow-hidden">
+            <button @click="open = (open===i ? -1 : i)" class="w-full text-left px-5 py-5 flex items-center justify-between gap-4">
+              <span class="text-[18px] font-bold" x-text="f.q"></span>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#479D6E" stroke-width="2.4" stroke-linecap="round" class="shrink-0 transition-transform" :class="open===i && 'rotate-45'"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <div x-show="open===i" x-collapse>
+              <p class="text-[15.5px] leading-relaxed text-muted px-5 pb-5 pt-0" x-text="f.a"></p>
+            </div>
+          </div>
+        </template>
+      </div>
+      <div class="text-center mt-10 bg-brand-mint2 rounded-[20px] p-8">
+        <h3 class="font-head text-[24px] font-extrabold mb-2 text-brand-dark">Still need help?</h3>
+        <p class="text-base text-[#3a5a48] mb-4">Our North American support team is here for you.</p>
+        <button @click="$store.shop.pushToast('Got it','Support will reach out shortly')" class="bg-brand-dark text-white font-bold text-base px-6 py-3.5 rounded-xl">Contact support</button>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/theme.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>

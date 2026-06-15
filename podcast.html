@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Podcast — Onefinity CNC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind.config.js"></script>
+  <link rel="stylesheet" href="assets/theme.css">
+</head>
+<body class="font-body text-ink bg-white antialiased min-h-screen flex flex-col">
+
+  <div id="site-header"></div>
+
+  <main class="flex-1">
+    <div id="page-hero"
+         data-eyebrow="Listen &amp; Learn"
+         data-title="The Onefinity Podcast"
+         data-sub="Conversations with makers, pros and the team — tips, stories and the occasional shop disaster."
+         data-cta="Apple Podcasts" data-cta-href="#"
+         data-cta2="Spotify" data-cta2-href="#"></div>
+
+    <section class="shell-narrow py-16 lg:py-20"
+         x-data="{ episodes: [
+           {n:'EP 24',title:'Dialing in feeds & speeds for aluminum',len:'48 min'},
+           {n:'EP 23',title:'From hobby shop to small business',len:'52 min'},
+           {n:'EP 22',title:'The truth about spindles vs routers',len:'39 min'},
+           {n:'EP 21',title:'Running the ATC unattended overnight',len:'44 min'},
+           {n:'EP 20',title:'Designing for the 4th axis rotary',len:'41 min'}
+         ] }">
+      <div class="flex flex-col gap-3">
+        <template x-for="(e,i) in episodes" :key="i">
+          <div class="card card-hover reveal p-5 flex items-center gap-4">
+            <button @click="$store.shop.pushToast('Playing','Audio preview not wired up')" class="w-12 h-12 rounded-full bg-brand-mint2 text-brand-dark flex items-center justify-center shrink-0 hover:bg-brand-mint transition-colors"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="8 5 19 12 8 19 8 5"/></svg></button>
+            <div class="flex-1 min-w-0"><div class="text-[11px] font-bold text-brand-green tracking-[.06em]" x-text="e.n"></div><h3 class="font-head text-[18px] font-extrabold leading-tight" x-text="e.title"></h3></div>
+            <span class="text-sm text-faint shrink-0" x-text="e.len"></span>
+          </div>
+        </template>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/theme.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>

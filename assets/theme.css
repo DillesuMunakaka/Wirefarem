@@ -1,0 +1,87 @@
+/* ============================================================
+   Onefinity prototype — global CSS layer (Premium maker-tech).
+   Fonts loaded via <link> in each page <head>.
+   Reusable component classes keep every page visually consistent.
+   ============================================================ */
+
+:root {
+  --g1:#1C3A2A; --g2:#234E37; --g3:#2F6949; --g4:#479D6E; --mint:#C8E2D4;
+}
+
+html, body { margin: 0; padding: 0; }
+body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; letter-spacing: -.005em; }
+img { max-width: 100%; display: block; }
+button { font-family: inherit; cursor: pointer; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #cfd6d2; border-radius: 8px; }
+::-webkit-scrollbar-track { background: #f0f2f1; }
+
+[x-cloak] { display: none !important; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ---------- Shared page shell (kills dead gutters, consistent width) ---------- */
+.shell { width: 100%; max-width: 1280px; margin-inline: auto; padding-inline: clamp(18px, 4vw, 30px); }
+.shell-narrow { width: 100%; max-width: 1040px; margin-inline: auto; padding-inline: clamp(18px, 4vw, 30px); }
+
+/* ---------- Texture & gradient meshes ---------- */
+.grain { position: relative; }
+.grain::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: .07; mix-blend-mode: overlay;
+}
+.grain > * { position: relative; z-index: 1; }
+
+/* deep premium green mesh for hero bands */
+.mesh-dark {
+  background-color: #1d3b2b;
+  background-image:
+    radial-gradient(60% 90% at 12% 8%, rgba(127,203,161,.30), transparent 60%),
+    radial-gradient(55% 80% at 92% 18%, rgba(71,157,110,.45), transparent 60%),
+    radial-gradient(70% 90% at 78% 110%, rgba(36,78,55,.85), transparent 60%),
+    linear-gradient(135deg, #1C3A2A 0%, #234E37 48%, #2F6949 100%);
+}
+.mesh-light {
+  background-color: #F2F8F4;
+  background-image:
+    radial-gradient(45% 70% at 8% 0%, rgba(200,226,212,.55), transparent 60%),
+    radial-gradient(40% 60% at 100% 10%, rgba(234,244,238,.9), transparent 60%);
+}
+
+/* soft accent ring shapes (decorative) */
+.ring-shape { position: absolute; border-radius: 9999px; pointer-events: none; }
+
+/* ---------- Glass / cards ---------- */
+.glass { background: rgba(255,255,255,.10); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.18); }
+.card {
+  background: #fff; border: 1px solid #ECEFED; border-radius: 22px;
+  transition: transform .28s cubic-bezier(.2,.7,.2,1), box-shadow .28s, border-color .28s;
+}
+.card-hover:hover { transform: translateY(-6px); box-shadow: 0 26px 50px rgba(31,74,50,.12); border-color: var(--mint); }
+
+/* ---------- Buttons ---------- */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; font-weight: 700; border-radius: 14px; transition: transform .18s, box-shadow .18s, background .18s, border-color .18s; }
+.btn-primary { background: var(--g4); color: #fff; box-shadow: 0 12px 26px rgba(71,157,110,.30); }
+.btn-primary:hover { background: var(--g3); transform: translateY(-2px); box-shadow: 0 18px 34px rgba(47,105,73,.38); }
+.btn-ghost { background: #fff; color: #2A2E31; border: 1.5px solid #DDE2DF; }
+.btn-ghost:hover { border-color: var(--g4); transform: translateY(-2px); }
+.btn-light { background: #fff; color: var(--g3); }
+.btn-light:hover { transform: translateY(-2px); }
+
+/* eyebrow label */
+.eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+
+/* ---------- Scroll reveal (no-JS safe: only hides when html.js present) ---------- */
+.js .reveal { opacity: 0; transform: translateY(20px); }
+.js .reveal.in { opacity: 1; transform: none; transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
+.reveal-d1 { transition-delay: .07s; } .reveal-d2 { transition-delay: .14s; } .reveal-d3 { transition-delay: .21s; } .reveal-d4 { transition-delay: .28s; }
+@media (prefers-reduced-motion: reduce) { .js .reveal { opacity: 1 !important; transform: none !important; } }
+
+/* ---------- Header: subtle shadow once scrolled ---------- */
+[data-header].is-scrolled { box-shadow: 0 6px 24px rgba(20,35,26,.07); }
+
+/* ---------- Legal / prose ---------- */
+.toc-link.active { color: var(--g3); font-weight: 700; }

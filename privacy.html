@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy Policy — Onefinity CNC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind.config.js"></script>
+  <link rel="stylesheet" href="assets/theme.css">
+</head>
+<body class="font-body text-ink bg-white antialiased min-h-screen flex flex-col">
+
+  <div id="site-header"></div>
+
+  <main class="flex-1">
+    <div id="page-hero" data-eyebrow="Legal" data-title="Privacy Policy"
+         data-sub="How we collect, use and protect your information." data-align="left"></div>
+    <div class="shell py-16 lg:py-20"
+         x-data="{ sections: [
+           {h:'Information we collect', p:'We collect information you provide when you place an order or contact us — such as your name, email, shipping address and payment details — as well as information collected automatically, like device, browser and usage data, through cookies and similar technologies.'},
+           {h:'How we use your information', p:'We use your information to process orders, provide support, communicate about your account, improve our products and site, and — where you have opted in — send marketing. We process payments through secure third-party providers and do not store full card numbers.'},
+           {h:'Sharing', p:'We share information with service providers who help us operate (payment, shipping, analytics, email) under contractual safeguards. We do not sell your personal information. We may disclose information where required by law or to protect our rights.'},
+           {h:'Cookies', p:'We use cookies to keep your cart, remember preferences and understand how the site is used. You can control cookies through your browser settings; disabling some may affect site functionality.'},
+           {h:'Your rights', p:'Depending on your region, you may have rights to access, correct, delete or port your data, and to object to or restrict certain processing. To exercise these rights, contact us using the details below.'},
+           {h:'Data retention & security', p:'We retain personal information only as long as needed for the purposes described or as required by law, and we use reasonable technical and organizational measures to protect it.'},
+           {h:'Contact', p:'For privacy questions or requests, email privacy@onefinitycnc.com.'}
+         ] }">
+      <div class="grid lg:grid-cols-[240px_1fr] gap-10 lg:gap-14 items-start">
+        <aside class="hidden lg:block lg:sticky lg:top-28">
+          <div class="text-[11px] font-extrabold uppercase tracking-[.14em] text-faint mb-3">On this page</div>
+          <nav class="flex flex-col">
+            <template x-for="(s,i) in sections" :key="i"><a :href="'#sec-'+i" class="text-[14px] text-muted hover:text-brand-dark py-1.5 pl-3 border-l-2 border-line hover:border-brand-green transition-colors" x-text="s.h"></a></template>
+          </nav>
+        </aside>
+        <div class="max-w-[720px]">
+          <p class="text-sm text-faint mb-8">Last updated: June 2026 · sample policy for the prototype, not legal advice.</p>
+          <div class="flex flex-col gap-9">
+            <template x-for="(s,i) in sections" :key="i">
+              <section :id="'sec-'+i" class="reveal scroll-mt-28"><h2 class="font-head text-[22px] font-extrabold mb-2.5" x-text="s.h"></h2><p class="text-[16px] leading-relaxed text-muted" x-text="s.p"></p></section>
+            </template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/theme.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>

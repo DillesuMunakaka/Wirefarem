@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Order Confirmed — Onefinity CNC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind.config.js"></script>
+  <link rel="stylesheet" href="assets/theme.css">
+</head>
+<body class="font-body text-ink bg-white antialiased min-h-screen flex flex-col">
+
+  <div id="site-header"></div>
+
+  <main class="flex-1">
+    <div class="max-w-[640px] mx-auto px-[22px] pt-[70px] pb-[90px] text-center"
+         x-data="{ no: new URLSearchParams(location.search).get('no') || (function(){ try{ return localStorage.getItem('of_lastOrder'); }catch(e){ return null; } })() || 'OF-204918' }">
+      <div class="w-[88px] h-[88px] rounded-full bg-brand-mint2 flex items-center justify-center mx-auto mb-6 animate-pop"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#2F6949" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <h1 class="font-head text-[clamp(32px,5vw,48px)] font-extrabold mb-3">Order confirmed!</h1>
+      <p class="text-[19px] text-muted mb-2">Thank you for joining the Onefinity experience.</p>
+      <p class="text-base text-faint mb-7">Order <strong class="text-brand-dark" x-text="no"></strong> · A confirmation email is on its way.</p>
+      <div class="bg-brand-wash2 rounded-[18px] p-6 text-left mb-7">
+        <div class="flex items-center gap-3"><span class="w-[38px] h-[38px] rounded-[10px] bg-brand-mint flex items-center justify-center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2F6949" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span><div><div class="font-bold">Shipping soon</div><div class="text-[13px] text-faint">We'll email tracking within 1–2 weeks.</div></div></div>
+      </div>
+      <div class="flex gap-3 justify-center flex-wrap">
+        <a href="index.html" class="bg-brand-green text-white font-bold text-base px-6 py-3.5 rounded-xl">Back to home</a>
+        <a href="collection.html" class="border-[1.5px] border-line2 font-bold text-base px-6 py-3.5 rounded-xl">Keep shopping</a>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/theme.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>

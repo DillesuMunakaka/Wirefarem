@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Product — Onefinity CNC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind.config.js"></script>
+  <link rel="stylesheet" href="assets/theme.css">
+</head>
+<body class="font-body text-ink bg-white antialiased min-h-screen flex flex-col">
+
+  <div id="site-header"></div>
+
+  <main class="flex-1"
+        x-data="{
+          id: new URLSearchParams(location.search).get('id') || 'woodworker',
+          qty: 1,
+          sel: {},
+          mainIdx: 0,
+          open: { specs: true, incl: false, ship: false },
+          init() { (this.groups).forEach((g,i)=>{ if(this.sel[i]==null) this.sel[i]=0; }); },
+          get p() { return OF_DATA.allProducts.find(x=>x.id===this.id) || OF_DATA.allProducts[0]; },
+          get isMachine() { return this.p.type==='machine'; },
+          get groups() { return this.p.variantGroups || []; },
+          get bg() { return this.isMachine ? 'linear-gradient(160deg,#F4F7F5,#EAF4EE)' : 'linear-gradient(160deg,#31363A,#23272A)'; },
+          get gallery() { return this.isMachine ? [this.p.img, OF_DATA.IMG.exploded, this.p.img] : [this.p.img]; },
+          get unit() { let t=this.p.price; this.groups.forEach((g,i)=>{ t += (g.options[this.sel[i]||0]||{}).delta||0; }); return t; },
+          get total() { return this.unit * this.qty; },
+          get specs() { return this.isMachine
+            ? [{k:'Work area',v:this.p.size},{k:'Frame',v:'All-metal, rigid'},{k:'Motion',v:'Precision ball screw'},{k:'Controller',v:'Redline HD ready'},{k:'Warranty',v:this.p.id==='foreman'?'5 years':'2 years'}]
+            : [{k:'Compatibility',v:'All Onefinity machines'},{k:'Install',v:'Plug & play'},{k:'Support',v:'Officially supported'},{k:'Ships',v:'1–2 weeks'}]; },
+          get incl() { return this.isMachine
+            ? ['Preassembled rails & gantry','Controller + power supply','Carveco Maker (1-yr licence)','All hardware & tools']
+            : ['Main unit','Mounting hardware','Quick-start guide']; },
+          get related() { return (this.isMachine ? OF_DATA.accessories : OF_DATA.machines).slice(0,4); },
+          relBg(r) { return OF_DATA.machines.includes(r) ? 'linear-gradient(160deg,#F4F7F5,#EAF4EE)' : 'linear-gradient(160deg,#31363A,#23272A)'; },
+          addToCart() {
+            const parts = this.groups.map((g,i)=>g.options[this.sel[i]||0].name);
+            $store.shop.add({ id: this.p.id + (parts.length ? '-'+Object.values(this.sel).join('-') : ''), name: this.p.name, price: this.unit, img: this.p.img, sub: parts.length ? parts.join(' · ') : (this.p.size||'Accessory'), qty: this.qty });
+          }
+        }">
+
+    <!-- breadcrumb -->
+    <div class="shell pt-5 pb-1 text-[13px] text-faint font-semibold">
+      <a href="index.html" class="hover:text-brand-dark">Home</a> /
+      <a href="collection.html" class="hover:text-brand-dark">Shop</a> /
+      <span class="text-ink" x-text="p.name"></span>
+    </div>
+
+    <!-- PDP -->
+    <section class="shell pt-4 pb-16 grid lg:grid-cols-2 gap-8 lg:gap-14 items-start">
+      <!-- GALLERY -->
+      <div class="lg:sticky lg:top-24">
+        <div class="relative aspect-square rounded-[24px] flex items-center justify-center overflow-hidden border border-line" :style="'background:'+bg">
+          <span x-show="p.badge" class="absolute top-4 left-4 text-white text-[11px] font-bold px-3 py-1 rounded-full z-[2]" :style="'background:'+(p.badgeColor||'#479D6E')" x-text="p.badge"></span>
+          <img :src="gallery[mainIdx]" :alt="p.name" class="w-full h-full object-contain p-10">
+        </div>
+        <div class="flex gap-3 mt-3" x-show="gallery.length>1">
+          <template x-for="(g,i) in gallery" :key="i">
+            <button @click="mainIdx=i" class="w-[74px] h-[74px] rounded-[14px] overflow-hidden border-2 transition-colors" :class="mainIdx===i ? 'border-brand-green' : 'border-line'" :style="'background:'+bg">
+              <img :src="g" alt="" class="w-full h-full object-contain p-2" loading="lazy">
+            </button>
+          </template>
+        </div>
+      </div>
+
+      <!-- BUY BOX -->
+      <div>
+        <div class="flex items-center gap-3 mb-3 flex-wrap">
+          <span class="inline-block bg-brand-mint2 text-brand-dark text-xs font-bold px-3 py-1.5 rounded-full" x-text="isMachine ? 'CNC Machine' : 'Accessory'"></span>
+          <span class="flex items-center gap-1.5 text-sm text-muted"><span class="text-amber tracking-[1px]">★★★★★</span> 5.0 · 128 reviews</span>
+        </div>
+        <h1 class="font-head text-[clamp(28px,4vw,42px)] font-extrabold tracking-[-.01em] leading-[1.06] mb-3" x-text="p.name"></h1>
+        <p class="text-[16.5px] leading-relaxed text-muted mb-5" x-text="p.blurb"></p>
+
+        <div class="flex items-baseline gap-2.5 mb-6">
+          <span class="font-head text-[36px] font-extrabold text-brand-dark" x-text="$store.shop.money(unit)"></span>
+          <span class="text-sm text-faint" x-text="$store.shop.currency + ' · taxes at checkout'"></span>
+        </div>
+
+        <!-- variant pill selectors -->
+        <div class="flex flex-col gap-5 mb-6" x-show="groups.length">
+          <template x-for="(g,gi) in groups" :key="gi">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-bold text-ink" x-text="g.label"></span>
+                <span class="text-[13px] text-faint" x-text="g.options[sel[gi]||0].name"></span>
+              </div>
+              <div class="flex flex-wrap gap-2.5">
+                <template x-for="(o,oi) in g.options" :key="oi">
+                  <button @click="sel[gi]=oi" class="px-4 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all flex items-center gap-2"
+                    :class="(sel[gi]||0)===oi ? 'border-brand-green bg-brand-mint2 text-brand-dark' : 'border-line2 text-ink hover:border-brand-green'">
+                    <span x-text="o.name"></span>
+                    <span x-show="o.delta>0" class="text-[12px] font-bold text-brand-dark" x-text="'+'+$store.shop.money(o.delta)"></span>
+                  </button>
+                </template>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- qty + add -->
+        <div class="flex gap-3 items-stretch flex-wrap mb-3">
+          <div class="flex items-center border-[1.5px] border-line2 rounded-[14px] overflow-hidden shrink-0">
+            <button @click="qty=Math.max(1,qty-1)" class="w-12 h-full text-[20px] text-muted">−</button>
+            <span class="w-10 text-center text-[17px] font-bold" x-text="qty"></span>
+            <button @click="qty++" class="w-12 h-full text-[19px] text-muted">+</button>
+          </div>
+          <button @click="addToCart()" class="btn btn-primary flex-1 min-w-[220px] text-[16.5px] py-4">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1.6"/><circle cx="19" cy="21" r="1.6"/><path d="M2.5 3h2l2.2 12.4a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L22 7H6"/></svg>
+            Add to Cart · <span x-text="$store.shop.money(total)"></span>
+          </button>
+        </div>
+        <a x-show="isMachine" href="build.html" class="block text-center w-full border-[1.5px] border-brand-green text-brand-dark text-base font-bold py-3.5 rounded-[14px] hover:bg-brand-mint2 transition-colors mb-6">⚡ Customize this machine →</a>
+
+        <!-- trust row -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-7">
+          <div class="flex flex-col items-center text-center gap-1.5 bg-brand-wash rounded-[14px] p-3">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2F6949" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <span class="text-[11.5px] font-bold leading-tight">Free shipping<br>over CA$75</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1.5 bg-brand-wash rounded-[14px] p-3">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2F6949" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+            <span class="text-[11.5px] font-bold leading-tight">Ships in<br>1–2 weeks</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1.5 bg-brand-wash rounded-[14px] p-3">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2F6949" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/><polyline points="9 12 11 14 15 10"/></svg>
+            <span class="text-[11.5px] font-bold leading-tight" x-text="(isMachine && p.id==='foreman') ? '5-year warranty' : (isMachine ? '2-year warranty' : '1-year warranty')"></span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1.5 bg-brand-wash rounded-[14px] p-3">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2F6949" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span class="text-[11.5px] font-bold leading-tight">Secure<br>checkout</span>
+          </div>
+        </div>
+
+        <!-- includes -->
+        <div class="bg-brand-wash2 rounded-[18px] p-5 mb-6">
+          <div class="text-[13px] font-bold uppercase tracking-[.1em] text-brand-green mb-3">In the box</div>
+          <div class="grid sm:grid-cols-2 gap-2.5">
+            <template x-for="i in incl" :key="i">
+              <div class="flex items-center gap-2.5 text-[14.5px]">
+                <span class="w-[20px] h-[20px] rounded-full bg-brand-mint2 flex items-center justify-center shrink-0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2F6949" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                <span x-text="i"></span>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- accordions -->
+        <div class="border-t border-line">
+          <button @click="open.specs=!open.specs" class="w-full flex items-center justify-between py-4 text-left"><span class="font-head text-[17px] font-extrabold">Specifications</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#479D6E" stroke-width="2.4" stroke-linecap="round" class="transition-transform" :class="open.specs && 'rotate-45'"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          <div x-show="open.specs" x-collapse>
+            <div class="pb-5">
+              <template x-for="sp in specs" :key="sp.k">
+                <div class="flex justify-between gap-3 py-2.5 border-b border-line text-[14.5px]"><span class="text-muted" x-text="sp.k"></span><span class="font-bold" x-text="sp.v"></span></div>
+              </template>
+            </div>
+          </div>
+        </div>
+        <div class="border-t border-line">
+          <button @click="open.ship=!open.ship" class="w-full flex items-center justify-between py-4 text-left"><span class="font-head text-[17px] font-extrabold">Shipping &amp; returns</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#479D6E" stroke-width="2.4" stroke-linecap="round" class="transition-transform" :class="open.ship && 'rotate-45'"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          <div x-show="open.ship" x-collapse>
+            <p class="pb-5 text-[14.5px] leading-relaxed text-muted">Free standard shipping on orders over CA$75. Most items ship within 1–2 weeks; custom builds may take longer. 30-day returns on eligible items in original condition. Lead and transit times are shown at checkout.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY ONEFINITY strip -->
+    <section class="bg-brand-wash">
+      <div class="shell py-12 grid grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="reveal flex flex-col items-center text-center gap-2"><div class="w-12 h-12 rounded-[14px] bg-white text-brand-dark flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,.05)]"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div class="font-bold text-[15px]">Precision ball screws</div><p class="text-[13px] text-muted leading-snug">Fast, accurate travel — no stretchy belts.</p></div>
+        <div class="reveal reveal-d1 flex flex-col items-center text-center gap-2"><div class="w-12 h-12 rounded-[14px] bg-white text-brand-dark flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,.05)]"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg></div><div class="font-bold text-[15px]">Setup in under an hour</div><p class="text-[13px] text-muted leading-snug">Preassembled rails — make, don't build.</p></div>
+        <div class="reveal reveal-d2 flex flex-col items-center text-center gap-2"><div class="w-12 h-12 rounded-[14px] bg-white text-brand-dark flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,.05)]"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3a2 2 0 0 1 4 0v1h3a1 1 0 0 1 1 1v3h1a2 2 0 0 1 0 4h-1v3a1 1 0 0 1-1 1h-3v-1a2 2 0 0 0-4 0v1H6a1 1 0 0 1-1-1v-3H4a2 2 0 0 1 0-4h1V5a1 1 0 0 1 1-1h3z"/></svg></div><div class="font-bold text-[15px]">Plug &amp; play add-ons</div><p class="text-[13px] text-muted leading-snug">Spindle, laser, rotary & ATC — supported.</p></div>
+        <div class="reveal reveal-d3 flex flex-col items-center text-center gap-2"><div class="w-12 h-12 rounded-[14px] bg-white text-brand-dark flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,.05)]"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="font-bold text-[15px]">North American support</div><p class="text-[13px] text-muted leading-snug">A team and community that has your back.</p></div>
+      </div>
+    </section>
+
+    <!-- RELATED -->
+    <section class="shell py-16">
+      <h2 class="font-head text-[clamp(24px,3vw,34px)] font-extrabold mb-6">Complete your setup</h2>
+      <div class="grid gap-5" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">
+        <template x-for="r in related" :key="r.id">
+          <div class="card card-hover reveal overflow-hidden flex flex-col">
+            <a :href="'product.html?id='+r.id" class="h-[160px] flex items-center justify-center" :style="'background:'+relBg(r)"><img :src="r.img" :alt="r.name" class="w-full h-full object-contain p-5" loading="lazy"></a>
+            <div class="p-4 flex flex-col gap-2 flex-1">
+              <h3 class="font-head text-[15.5px] font-bold flex-1"><a :href="'product.html?id='+r.id" x-text="r.name"></a></h3>
+              <div class="flex items-center justify-between"><span class="text-[18px] font-extrabold" x-text="$store.shop.money(r.price)"></span><button @click="$store.shop.openVariant(r.id)" class="bg-brand-mint2 text-brand-dark font-bold text-[13px] px-3 py-2 rounded-[9px]">Add</button></div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </section>
+
+    <!-- REVIEWS -->
+    <section class="bg-brand-wash2">
+      <div class="shell py-16" x-data="{ reviews: OF_DATA.reviews }">
+        <div class="text-center mb-9"><span class="text-amber text-[24px] tracking-[2px]">★★★★★</span><h2 class="font-head text-[clamp(24px,3vw,34px)] font-extrabold mt-2">Loved by makers</h2><p class="text-muted mt-1">5.0 average · 475 verified reviews</p></div>
+        <div class="grid md:grid-cols-3 gap-5">
+          <template x-for="r in reviews" :key="r.name">
+            <div class="card reveal p-6 flex flex-col">
+              <span class="text-amber text-[15px] tracking-[2px] mb-3">★★★★★</span>
+              <p class="text-[15.5px] leading-relaxed mb-4 flex-1">"<span x-text="r.quote"></span>"</p>
+              <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full text-white font-extrabold flex items-center justify-center text-sm" :style="'background:'+r.avatarBg" x-text="r.initials"></div><div><div class="font-bold text-sm" x-text="r.name"></div><div class="text-xs text-faint" x-text="r.role"></div></div></div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/theme.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>

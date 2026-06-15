@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shop — Onefinity CNC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind.config.js"></script>
+  <link rel="stylesheet" href="assets/theme.css">
+</head>
+<body class="font-body text-ink bg-white antialiased min-h-screen flex flex-col">
+
+  <div id="site-header"></div>
+
+  <main class="flex-1">
+    <div class="max-w-wide mx-auto px-[22px] pt-10 pb-20"
+         x-data="{
+           all: OF_DATA.allProducts,
+           filter: new URLSearchParams(location.search).get('c') || 'all',
+           sort: 'featured',
+           chips: [{id:'all',label:'All'},{id:'machine',label:'Machines'},{id:'acc',label:'Accessories'},{id:'spindle',label:'Spindles'},{id:'laser',label:'Lasers'},{id:'rotary',label:'Rotary'},{id:'atc',label:'ATC'},{id:'probe',label:'Probes'},{id:'table',label:'Tables'}],
+           get filtered(){ let f=this.all.filter(p=> this.filter==='all'?true : this.filter==='acc'? p.type==='acc' : p.cat===this.filter); if(this.sort==='low') f=[...f].sort((a,b)=>a.price-b.price); else if(this.sort==='high') f=[...f].sort((a,b)=>b.price-a.price); return f; },
+           get title(){ return this.filter==='acc' ? 'Accessories' : 'Shop all'; },
+           bg(p){ return p.type==='machine' ? 'linear-gradient(160deg,#F4F7F5,#EAF4EE)' : 'linear-gradient(160deg,#31363A,#23272A)'; },
+           pad(p){ return p.type==='machine' ? '18px' : '26px'; }
+         }">
+      <div class="mb-2 text-[13px] text-faint font-semibold">Home / <span x-text="title"></span></div>
+      <h1 class="font-head text-[clamp(36px,6vw,55px)] font-extrabold tracking-[-.01em] mb-1.5" x-text="title"></h1>
+      <p class="text-[18px] text-muted mb-6"><span x-text="filtered.length"></span> products · Built in North America, shipped worldwide</p>
+
+      <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
+        <div class="flex gap-2.5 overflow-x-auto pb-1.5 flex-1 no-scrollbar">
+          <template x-for="c in chips" :key="c.id">
+            <button @click="filter=c.id" class="px-4 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all border-[1.5px]"
+              :class="filter===c.id ? 'border-brand-green bg-brand-green text-white' : 'border-line2 bg-white text-ink hover:border-brand-green'"
+              x-text="c.label"></button>
+          </template>
+        </div>
+        <select x-model="sort" class="border-[1.5px] border-line2 rounded-[11px] px-3.5 py-2.5 text-sm font-semibold bg-white cursor-pointer shrink-0">
+          <option value="featured">Featured</option>
+          <option value="low">Price: Low to High</option>
+          <option value="high">Price: High to Low</option>
+        </select>
+      </div>
+
+      <div class="grid gap-5" style="grid-template-columns:repeat(auto-fill,minmax(240px,1fr))">
+        <template x-for="p in filtered" :key="p.id">
+          <div class="bg-white border border-line rounded-[20px] overflow-hidden flex flex-col hover:-translate-y-1.5 hover:shadow-cardH hover:border-brand-mint transition-all">
+            <a :href="'product.html?id='+p.id" class="relative h-[200px] flex items-center justify-center" :style="'background:'+bg(p)">
+              <span x-show="p.badge" class="absolute top-3.5 left-3.5 text-white text-[11px] font-bold px-2.5 py-1 rounded-full z-[2]" :style="'background:'+(p.badgeColor||'#479D6E')" x-text="p.badge"></span>
+              <img :src="p.img" :alt="p.name" class="w-full h-full object-contain" :style="'padding:'+pad(p)" loading="lazy">
+            </a>
+            <div class="p-[18px] flex flex-col flex-1">
+              <h3 class="font-head text-[18px] font-extrabold leading-tight mb-1.5 min-h-[42px]"><a :href="'product.html?id='+p.id" x-text="p.name"></a></h3>
+              <p class="text-[13.5px] leading-normal text-muted mb-3.5 min-h-[60px]" x-text="p.blurb"></p>
+              <div class="mt-auto">
+                <div class="text-[21px] font-extrabold mb-2.5" x-text="$store.shop.money(p.price)"></div>
+                <div class="flex gap-2">
+                  <a :href="'product.html?id='+p.id" class="flex-1 text-center border-[1.5px] border-line2 rounded-[10px] py-2.5 font-semibold text-[13.5px] hover:border-brand-green transition-colors">Details</a>
+                  <button @click="$store.shop.openVariant(p.id)" class="flex-1 bg-brand-green text-white font-bold text-[13.5px] py-2.5 rounded-[10px] flex items-center justify-center gap-1.5 hover:bg-brand-dark transition-colors">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/theme.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>

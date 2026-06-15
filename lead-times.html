@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lead Times — Onefinity CNC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind.config.js"></script>
+  <link rel="stylesheet" href="assets/theme.css">
+</head>
+<body class="font-body text-ink bg-white antialiased min-h-screen flex flex-col">
+
+  <div id="site-header"></div>
+
+  <main class="flex-1">
+    <div id="page-hero"
+         data-eyebrow="Before you order"
+         data-title="Lead Times"
+         data-sub="Current estimated processing times. These update as stock changes — final transit time is shown at checkout."></div>
+
+    <section class="shell-narrow py-16 lg:py-20"
+         x-data="{ rows: [
+           {item:'Apprentice',time:'Ships in 1–2 weeks',status:'In stock',color:'#479D6E'},
+           {item:'Woodworker X-50',time:'Ships in 1–2 weeks',status:'In stock',color:'#479D6E'},
+           {item:'Journeyman X-50',time:'Ships in 2–3 weeks',status:'Low stock',color:'#F5A623'},
+           {item:'Foreman Elite',time:'Ships in 3–4 weeks',status:'Made to order',color:'#F5A623'},
+           {item:'Redline Spindle Kit',time:'Ships in 1 week',status:'In stock',color:'#479D6E'},
+           {item:'Automatic Tool Changer',time:'Ships in 3–5 weeks',status:'Backorder',color:'#C0392B'},
+           {item:'Accessories & parts',time:'Ships in 2–5 business days',status:'In stock',color:'#479D6E'}
+         ] }">
+      <div class="card reveal overflow-hidden">
+        <template x-for="(r,i) in rows" :key="i">
+          <div class="flex items-center justify-between gap-3 px-5 py-4 border-b border-line last:border-0">
+            <div><div class="font-bold text-[16px]" x-text="r.item"></div><div class="text-sm text-muted" x-text="r.time"></div></div>
+            <span class="text-xs font-bold px-2.5 py-1 rounded-full whitespace-nowrap" :style="'color:'+r.color+';background:'+r.color+'1A'" x-text="r.status"></span>
+          </div>
+        </template>
+      </div>
+      <p class="text-[13px] text-faint mt-4">Lead times are estimates only and do not include shipping transit time. Custom builds may take longer. Contact us for the latest on any specific item.</p>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/theme.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>

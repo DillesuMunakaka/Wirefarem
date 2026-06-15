@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Events &amp; Workshops — Onefinity CNC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind.config.js"></script>
+  <link rel="stylesheet" href="assets/theme.css">
+</head>
+<body class="font-body text-ink bg-white antialiased min-h-screen flex flex-col">
+
+  <div id="site-header"></div>
+
+  <main class="flex-1">
+    <div id="page-hero"
+         data-eyebrow="Join the experience"
+         data-title="Events &amp; Workshops"
+         data-sub="Live webinars, meetups and challenges with the Onefinity community."></div>
+
+    <section class="shell-narrow py-16 lg:py-20" x-data="{ events: OF_DATA.events }">
+      <div class="flex flex-col gap-3.5">
+        <template x-for="(e,i) in events" :key="i">
+          <div class="card card-hover reveal p-5 flex items-center gap-5 flex-wrap">
+            <div class="w-[74px] h-[74px] rounded-[14px] bg-brand-mint2 flex flex-col items-center justify-center shrink-0">
+              <span class="text-[11px] font-bold text-brand-dark tracking-[.05em]" x-text="e.date.split(' ')[0]"></span>
+              <span class="font-head text-[24px] font-extrabold text-brand-dark leading-none" x-text="e.date.split(' ')[1]"></span>
+            </div>
+            <div class="flex-1 min-w-[220px]">
+              <span class="inline-block text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full mb-1.5" :style="'background:'+e.typeColor" x-text="e.type"></span>
+              <h3 class="font-head text-[20px] font-extrabold mb-1" x-text="e.title"></h3>
+              <div class="text-sm text-muted" x-text="e.place"></div>
+            </div>
+            <button @click="$store.shop.pushToast(&quot;You're in!&quot;, &quot;We'll send you a reminder for &quot;+e.title)" class="bg-brand-green text-white font-bold text-sm px-5 py-3 rounded-[11px] shrink-0 hover:bg-brand-dark transition-colors">RSVP</button>
+          </div>
+        </template>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/theme.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>

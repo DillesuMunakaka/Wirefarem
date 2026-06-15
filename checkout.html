@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout — Onefinity CNC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind.config.js"></script>
+  <link rel="stylesheet" href="assets/theme.css">
+</head>
+<body class="font-body text-ink bg-white antialiased min-h-screen flex flex-col">
+
+  <div id="site-header"></div>
+
+  <main class="flex-1">
+    <div class="max-w-[1080px] mx-auto px-[22px] pt-9 pb-20"
+         x-data="{
+           step: 1,
+           form: { email:'', name:'', addr:'', city:'', zip:'', card:'' },
+           get sub(){ return $store.shop.subtotal; },
+           get shipping(){ return (this.sub>=75 || this.sub===0) ? 0 : 49; },
+           get grand(){ return this.sub + this.shipping; },
+           steps: [{n:1,label:'Information'},{n:2,label:'Delivery'},{n:3,label:'Payment'}],
+           back(){ if(this.step>1) this.step--; else location.href='cart.html'; },
+           primary(){ if(this.step<3){ this.step++; } else { this.place(); } },
+           place(){ const no='OF-'+Math.floor(100000+Math.random()*900000); try{localStorage.setItem('of_lastOrder',no);}catch(e){} $store.shop.clear(); location.href='order-confirmation.html'; }
+         }">
+      <h1 class="font-head text-[clamp(30px,4.4vw,46px)] font-extrabold mb-2">Checkout</h1>
+      <div class="flex gap-2.5 items-center mb-7 flex-wrap">
+        <template x-for="cs in steps" :key="cs.n">
+          <div class="flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-full flex items-center justify-center text-[13px] font-extrabold" :class="step>=cs.n ? 'bg-brand-green text-white' : 'bg-[#E4E9E6] text-faint'" x-text="cs.n"></span>
+            <span class="text-sm font-bold" :class="step>=cs.n ? 'text-brand-dark' : 'text-faint'" x-text="cs.label"></span>
+          </div>
+        </template>
+      </div>
+
+      <div class="flex flex-col lg:grid lg:grid-cols-[1fr_380px] gap-6 lg:gap-8 lg:items-start">
+        <div class="bg-white border border-line rounded-[20px] p-6">
+          <!-- info -->
+          <div x-show="step===1">
+            <h3 class="font-head text-[20px] font-extrabold mb-4">Contact &amp; address</h3>
+            <div class="flex flex-col gap-3.5">
+              <input x-model="form.email" placeholder="Email address" class="border-[1.5px] border-line2 rounded-[11px] px-3.5 py-3 text-[15px] outline-none w-full">
+              <input x-model="form.name" placeholder="Full name" class="border-[1.5px] border-line2 rounded-[11px] px-3.5 py-3 text-[15px] outline-none w-full">
+              <input x-model="form.addr" placeholder="Street address" class="border-[1.5px] border-line2 rounded-[11px] px-3.5 py-3 text-[15px] outline-none w-full">
+              <div class="flex gap-3"><input x-model="form.city" placeholder="City" class="border-[1.5px] border-line2 rounded-[11px] px-3.5 py-3 text-[15px] outline-none flex-1"><input x-model="form.zip" placeholder="Postal code" class="border-[1.5px] border-line2 rounded-[11px] px-3.5 py-3 text-[15px] outline-none flex-1"></div>
+            </div>
+          </div>
+          <!-- delivery -->
+          <div x-show="step===2">
+            <h3 class="font-head text-[20px] font-extrabold mb-4">Delivery method</h3>
+            <div class="flex flex-col gap-3">
+              <div class="border-2 border-brand-green bg-brand-mint2 rounded-[13px] p-4 flex items-center justify-between"><div><div class="font-bold text-[15px]">Standard shipping</div><div class="text-[13px] text-muted">5–8 business days</div></div><span class="font-extrabold text-brand-dark" x-text="shipping===0 ? 'Free' : $store.shop.money(shipping)"></span></div>
+              <div class="border-[1.5px] border-line2 rounded-[13px] p-4 flex items-center justify-between"><div><div class="font-bold text-[15px]">Express</div><div class="text-[13px] text-muted">2–3 business days</div></div><span class="font-extrabold" x-text="$store.shop.money(89)"></span></div>
+            </div>
+          </div>
+          <!-- payment -->
+          <div x-show="step===3">
+            <h3 class="font-head text-[20px] font-extrabold mb-4">Payment</h3>
+            <div class="flex flex-col gap-3.5">
+              <input x-model="form.card" placeholder="Card number" class="border-[1.5px] border-line2 rounded-[11px] px-3.5 py-3 text-[15px] outline-none w-full">
+              <div class="flex gap-3"><input placeholder="MM / YY" class="border-[1.5px] border-line2 rounded-[11px] px-3.5 py-3 text-[15px] outline-none flex-1"><input placeholder="CVC" class="border-[1.5px] border-line2 rounded-[11px] px-3.5 py-3 text-[15px] outline-none flex-1"></div>
+              <div class="flex items-center gap-2 text-faint text-[13px]"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#479D6E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Encrypted &amp; secure. We never store card details.</div>
+            </div>
+          </div>
+
+          <div class="flex gap-3 mt-6">
+            <button @click="back()" class="bg-brand-wash text-ink font-bold text-[15px] px-5 py-3.5 rounded-xl shrink-0">Back</button>
+            <button @click="primary()" class="flex-1 bg-brand-green text-white text-base font-bold py-3.5 rounded-xl hover:bg-brand-dark transition-colors" x-text="step<3 ? 'Continue' : 'Place Order'"></button>
+          </div>
+        </div>
+
+        <div class="lg:sticky lg:top-[160px] bg-brand-wash2 border border-line rounded-[20px] p-6">
+          <h3 class="font-head text-[18px] font-extrabold mb-4">Order summary</h3>
+          <div class="flex flex-col gap-3 mb-4 max-h-[240px] overflow-y-auto">
+            <template x-for="it in $store.shop.cart" :key="it.id">
+              <div class="flex gap-3 items-center">
+                <div class="w-12 h-12 rounded-[10px] border border-line shrink-0 overflow-hidden flex items-center justify-center" :class="it.custom ? 'bg-brand-mint2' : 'bg-brand-wash'"><img :src="it.img" alt="" class="w-full h-full object-contain p-1.5" loading="lazy"></div>
+                <div class="flex-1 min-w-0"><div class="text-[13.5px] font-bold leading-tight" x-text="it.name"></div><div class="text-xs text-faint">Qty <span x-text="it.qty"></span></div></div>
+                <span class="text-sm font-bold" x-text="$store.shop.money(it.price*it.qty)"></span>
+              </div>
+            </template>
+            <div x-show="!$store.shop.cart.length" class="text-sm text-faint">Your cart is empty.</div>
+          </div>
+          <div class="border-t border-[#E2E7E4] pt-3.5">
+            <div class="flex justify-between text-sm py-1.5"><span class="text-muted">Subtotal</span><span class="font-bold" x-text="$store.shop.money(sub)"></span></div>
+            <div class="flex justify-between text-sm py-1.5"><span class="text-muted">Shipping</span><span class="font-bold" x-text="sub===0 ? '—' : (shipping===0 ? 'Free' : $store.shop.money(shipping))"></span></div>
+            <div class="flex justify-between text-[20px] pt-2.5"><span class="font-bold">Total</span><span class="font-extrabold text-brand-dark" x-text="$store.shop.money(grand)"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/theme.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>

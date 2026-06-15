@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manuals — Onefinity CNC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind.config.js"></script>
+  <link rel="stylesheet" href="assets/theme.css">
+</head>
+<body class="font-body text-ink bg-white antialiased min-h-screen flex flex-col">
+
+  <div id="site-header"></div>
+
+  <main class="flex-1">
+    <div id="page-hero"
+         data-eyebrow="Documentation"
+         data-title="Manuals &amp; Guides"
+         data-sub="Assembly instructions, controller guides and accessory setup — all in one place."></div>
+
+    <section class="shell-narrow py-16 lg:py-20"
+         x-data="{ groups: [
+           {head:'Machines', items:['Apprentice — Assembly & Setup','Woodworker X-50 — Assembly & Setup','Journeyman X-50 — Assembly & Setup','Foreman Elite — Assembly & Setup']},
+           {head:'Controllers', items:['Standard Controller Guide','Elite 15” Touch Controller Guide','Firmware Update Instructions']},
+           {head:'Accessories', items:['Redline Spindle Kit','JTech Laser Module','4th Axis Rotary','Automatic Tool Changer (ATC)','Touch Probe & Tool Setter','QCW Table Frame']}
+         ] }">
+      <div class="flex flex-col gap-8">
+        <template x-for="(g,gi) in groups" :key="gi">
+          <div>
+            <h2 class="font-head text-[20px] font-extrabold mb-3" x-text="g.head"></h2>
+            <div class="card reveal overflow-hidden">
+              <template x-for="(it,i) in g.items" :key="i">
+                <a href="#" @click.prevent="$store.shop.pushToast('Manual','PDF download not wired up')" class="flex items-center justify-between gap-3 px-5 py-4 border-b border-line last:border-0 hover:bg-brand-wash transition-colors">
+                  <span class="flex items-center gap-3 text-[15px] font-semibold"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#479D6E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span x-text="it"></span></span>
+                  <span class="text-brand-dark font-bold text-sm shrink-0">PDF ↓</span>
+                </a>
+              </template>
+            </div>
+          </div>
+        </template>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/theme.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>

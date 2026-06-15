@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Terms &amp; Conditions — Onefinity CNC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind.config.js"></script>
+  <link rel="stylesheet" href="assets/theme.css">
+</head>
+<body class="font-body text-ink bg-white antialiased min-h-screen flex flex-col">
+
+  <div id="site-header"></div>
+
+  <main class="flex-1">
+    <div id="page-hero" data-eyebrow="Legal" data-title="Terms &amp; Conditions"
+         data-sub="The rules for using our site and buying our products." data-align="left"></div>
+    <div class="shell py-16 lg:py-20"
+         x-data="{ sections: [
+           {h:'Acceptance of terms', p:'By accessing this website or placing an order, you agree to these Terms & Conditions. If you do not agree, please do not use the site.'},
+           {h:'Orders & pricing', p:'All orders are subject to acceptance and availability. Prices are shown in the selected currency and may change without notice. We reserve the right to refuse or cancel any order, including where pricing or product information is incorrect.'},
+           {h:'Shipping & risk', p:'Estimated lead and transit times are provided for convenience and are not guaranteed. Risk of loss passes to you on delivery to the carrier. Import duties and taxes, where applicable, are the responsibility of the recipient.'},
+           {h:'Returns', p:'Eligible items may be returned within 30 days of delivery in original condition. Custom builds and consumables may be non-returnable. Return shipping may be the responsibility of the customer unless the item is defective.'},
+           {h:'Intellectual property', p:'All content on this site — including text, graphics, logos and images — is the property of Onefinity or its licensors and may not be reproduced without permission.'},
+           {h:'Limitation of liability', p:'To the maximum extent permitted by law, Onefinity is not liable for indirect, incidental or consequential damages arising from the use of our products or website. Our total liability is limited to the amount you paid for the relevant product.'},
+           {h:'Governing law', p:'These terms are governed by the laws of the jurisdiction in which Onefinity operates, without regard to conflict-of-law principles.'},
+           {h:'Changes', p:'We may update these terms from time to time. Continued use of the site after changes constitutes acceptance of the revised terms.'}
+         ] }">
+      <div class="grid lg:grid-cols-[240px_1fr] gap-10 lg:gap-14 items-start">
+        <aside class="hidden lg:block lg:sticky lg:top-28">
+          <div class="text-[11px] font-extrabold uppercase tracking-[.14em] text-faint mb-3">On this page</div>
+          <nav class="flex flex-col">
+            <template x-for="(s,i) in sections" :key="i"><a :href="'#sec-'+i" class="text-[14px] text-muted hover:text-brand-dark py-1.5 pl-3 border-l-2 border-line hover:border-brand-green transition-colors" x-text="s.h"></a></template>
+          </nav>
+        </aside>
+        <div class="max-w-[720px]">
+          <p class="text-sm text-faint mb-8">Last updated: June 2026 · sample policy for the prototype, not legal advice.</p>
+          <div class="flex flex-col gap-9">
+            <template x-for="(s,i) in sections" :key="i">
+              <section :id="'sec-'+i" class="reveal scroll-mt-28"><h2 class="font-head text-[22px] font-extrabold mb-2.5" x-text="s.h"></h2><p class="text-[16px] leading-relaxed text-muted" x-text="s.p"></p></section>
+            </template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/theme.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>

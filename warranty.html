@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Warranty — Onefinity CNC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind.config.js"></script>
+  <link rel="stylesheet" href="assets/theme.css">
+</head>
+<body class="font-body text-ink bg-white antialiased min-h-screen flex flex-col">
+
+  <div id="site-header"></div>
+
+  <main class="flex-1">
+    <div id="page-hero" data-eyebrow="Legal" data-title="Warranty"
+         data-sub="What's covered, for how long, and how to make a claim." data-align="left"></div>
+    <div class="shell py-16 lg:py-20"
+         x-data="{ sections: [
+           {h:'Coverage', p:'Onefinity warrants that its CNC machines and officially supported accessories will be free from defects in materials and workmanship under normal use for the warranty period applicable to your product. Elite machines carry a 5-year warranty; the Apprentice carries a 2-year warranty. Accessories carry a 1-year warranty unless otherwise stated.'},
+           {h:'What is covered', p:'The warranty covers structural components, motion hardware (rails, ball screws and bearings) and electronics that fail under normal, intended use. If a covered part fails, we will repair or replace it at our discretion at no charge for parts.'},
+           {h:'What is not covered', p:'The warranty does not cover normal wear items (such as bits, brushes and belts), damage from misuse, accident, modification, improper installation or operation outside published specifications, or consumables. Use of non-supported third-party components may void coverage on affected parts.'},
+           {h:'How to make a claim', p:'Contact our support team with your order number and a description of the issue, including photos or video where possible. We may ask you to perform basic troubleshooting before approving a replacement. Approved warranty parts ship to the original purchaser at the registered address.'},
+           {h:'Limitations', p:'This warranty is the sole and exclusive remedy. To the maximum extent permitted by law, Onefinity is not liable for incidental or consequential damages. Some jurisdictions do not allow certain limitations, so portions may not apply to you. This warranty gives you specific legal rights; you may have other rights that vary by region.'}
+         ] }">
+      <div class="grid lg:grid-cols-[240px_1fr] gap-10 lg:gap-14 items-start">
+        <aside class="hidden lg:block lg:sticky lg:top-28">
+          <div class="text-[11px] font-extrabold uppercase tracking-[.14em] text-faint mb-3">On this page</div>
+          <nav class="flex flex-col">
+            <template x-for="(s,i) in sections" :key="i"><a :href="'#sec-'+i" class="text-[14px] text-muted hover:text-brand-dark py-1.5 pl-3 border-l-2 border-line hover:border-brand-green transition-colors" x-text="s.h"></a></template>
+          </nav>
+        </aside>
+        <div class="max-w-[720px]">
+          <p class="text-sm text-faint mb-8">Last updated: June 2026 · sample policy for the prototype, not legal advice.</p>
+          <div class="flex flex-col gap-9">
+            <template x-for="(s,i) in sections" :key="i">
+              <section :id="'sec-'+i" class="reveal scroll-mt-28"><h2 class="font-head text-[22px] font-extrabold mb-2.5" x-text="s.h"></h2><p class="text-[16px] leading-relaxed text-muted" x-text="s.p"></p></section>
+            </template>
+          </div>
+          <div class="mt-10 card bg-brand-wash border-0 p-6 flex items-center justify-between gap-4 flex-wrap">
+            <div class="font-semibold">Need to start a warranty claim?</div>
+            <a href="contact.html" class="btn btn-primary px-5 py-3">Contact support</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/theme.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>
